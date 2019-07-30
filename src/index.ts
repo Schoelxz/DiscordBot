@@ -72,15 +72,22 @@ yoshinoBot.on("message", msg =>
 
 yoshinoBot.on("voiceStateUpdate", (oldMember, newMember) => 
 {
-    if(newMember.user.username === yoshinoBot.user.username || isNullOrUndefined(newMember.voiceChannel) || !ReadWrite.myMap.has(newMember.user.username))
+    if(!(newMember.user.id === yoshinoBot.user.id)) //is bot?
     {
-        console.log("Bot or undefined channel or member without sound on bot join. User: " + newMember.user.username)
-        return;
+        console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
+        if(isNullOrUndefined(newMember.voiceChannel) || !ReadWrite.myMap.has(newMember.user.username))
+        {
+            console.log("Undefined channel or member without sound on bot join. User: " + newMember.user.username)
+            return;
+        }
+        else if(!ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry)
+            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry);
+        else
+            joinVoiceChannel(newMember);
     }
     else
-    {
-        joinVoiceChannel(newMember);
-    }
+        console.log("voiceStateUpdate: was bot");
+
 })
 
 function joinVoiceChannel(guildMember : Discord.GuildMember)

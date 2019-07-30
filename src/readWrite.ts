@@ -1,12 +1,16 @@
 import * as fs from 'fs';
 import * as ConfigFile from "./config";
 
-const dataPath = "../userData";
+const usersDataPath = "../userData";
+let botTokens: botTokens;
+let myData : myUser;
+export let myMap = new Map();
 
-interface myUser
+export interface myUser
 {
     userName: string;
     songName: string;
+    playOnEntry: boolean;
 }
 
 interface botTokens
@@ -14,36 +18,50 @@ interface botTokens
     yoshinoToken: string;
 }
 
-let botTokens: botTokens;
-
-//var fileContent;
-let myData : myUser;
-export let myMap = new Map();
-
-//let userSongData: UserToSong = JSON.parse(`{"ID": 0, "userName": "Schoel", "songName": "initialD.wav"}`)
-
-export function AddJsonUserData(discordClient : string, songRequest : string)
+export function AddJsonUserSongData(discordClient : string, songRequest : string): void
 {
     console.log("Trying to Add JSON data for: " + discordClient);
-    myData = {
-        userName: discordClient,
-        songName: songRequest
+
+    if(fs.readFileSync(usersDataPath + "/" + discordClient + ".json"))
+    {
+        console.log(discordClient + " have data.");
+        let file = fs.readFileSync(usersDataPath + "/" + discordClient + ".json", 'utf8');
+        let existingData : myUser = JSON.parse(file);
+        existingData.songName = songRequest;
+        myData = existingData;
+    }
+    else
+    {
+        console.log(discordClient + " has no data, adding new data..");
+        myData.userName = discordClient;
+        myData.songName = songRequest;
+        myData.playOnEntry = true;
     }
 
-    let asdf = fs.writeFile(dataPath + "/" + discordClient + ".json", JSON.stringify(myData),  function(err) 
+    fs.writeFile(usersDataPath + "/" + discordClient + ".json", JSON.stringify(myData),  function(err) 
     {
         if (err) 
-        {
             return console.error(err);
-        }
         console.log("File written!");
     });
+}
 
+export function AddJsonUserData(userData: myUser): void
+{
+    console.log("Trying to Add JSON data for: " + userData.userName);
+    myData = userData;
+
+    fs.writeFile(usersDataPath + "/" + myData.userName + ".json", JSON.stringify(myData),  function(err) 
+    {
+        if (err) 
+            return console.error(err);
+        console.log("File written!");
+    });
 }
 
 export function GetAllUsersJsonFileNames() : string[]
 {
-    return fs.readdirSync(dataPath);
+    return fs.readdirSync(usersDataPath);
 }
 
 export function GetAllFileNamesFromDir(directory : string) : string[]
@@ -51,32 +69,23 @@ export function GetAllFileNamesFromDir(directory : string) : string[]
     return fs.readdirSync(directory);
 }
 
-export function GetJsonDataSongFromUser(discordClient : string) : string
+export function GetJsonUserDataFromUser(discordClient : string) : myUser
 {
     let userData : myUser;
-    userData = 
-    {
-        userName: "",
-        songName: ""
-    }
-
-    let fileContent = fs.readFileSync(dataPath + "/" + discordClient + ".json", `utf8`);
-
+    let fileContent = fs.readFileSync(usersDataPath + "/" + discordClient + ".json", `utf8`);
     userData = JSON.parse(fileContent);
-        console.log("returning songname: " + userData.songName + " from user " + userData.userName);
-        myMap.set(userData.userName, userData.songName);
-        return userData.songName;
+    return userData;
 }
 
 export function UpdateUserMapList() : void
 {
     console.log("Updating User Map List...");
-    let sumFiles = fs.readdirSync(dataPath);
+    let sumFiles = fs.readdirSync(usersDataPath);
     
     for (let i = 0; i < sumFiles.length; i++) 
     {
         let userData : myUser;
-        let file = fs.readFileSync(dataPath + "/" + sumFiles[i], "utf8");
+        let file = fs.readFileSync(usersDataPath + "/" + sumFiles[i], "utf8");
         userData = JSON.parse(file);
         myMap.set(userData.userName, userData.songName);
     }
@@ -120,9 +129,8 @@ function WriteFilePath(path : string, data : string): void
     fs.writeFile(path, data,  function(err) 
     {
         if (err) 
-        {
             return console.error(err);
-        }
         console.log("File created!");
     });
 }
+

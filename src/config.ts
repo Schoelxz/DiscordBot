@@ -6,7 +6,8 @@ export let config = {
         "leaveCommand",
         "musicCommand",
         "helpCommand",
-        "assignSongCommand"
+        "assignSongCommand",
+        "assignEntryCommand"
     ]
 }
 

@@ -4,7 +4,6 @@ import * as ReadWrite from "../readWrite";
 
 export default class assignSongCommand implements IBotCommand
 {
-
     readonly commandCall = "assign"
 
     help(): string 
@@ -31,7 +30,7 @@ export default class assignSongCommand implements IBotCommand
         {
             console.log("msgObject.author.username: " + msgObject.author.username);
             console.log("Clients song request: " + args[0]);
-            ReadWrite.AddJsonUserData(msgObject.author.username, args[0]);
+            ReadWrite.AddJsonUserSongData(msgObject.author.username, args[0]);
             ReadWrite.myMap.set(msgObject.author.username, args[0]);
         }
         else
