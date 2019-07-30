@@ -1,9 +1,10 @@
 import * as Discord from "discord.js";
+import * as Index from "../index";
 import {IBotCommand} from "../api";
 
 export default class helpCommand implements IBotCommand {
 
-private readonly _command = "help"
+    readonly commandCall = "help"
 
     help(): string 
     {
@@ -11,13 +12,19 @@ private readonly _command = "help"
     }
     isThisCommand(command: string): boolean 
     {
-        return command === this._command;
+        return command === this.commandCall;
     }
 
-    runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client): void 
+    runCommand(args: string[], msgObject: Discord.Message, botClient: Discord.Client): void 
     {
-        var replyA = "Available commands: help, join, leave, play, assign";
-        var replyB = "Available args: -h (e.g. !help -h)"
+        
+        let commandCalls : string = "";
+        for (let i = 0; i < Index.commands.length; i++) 
+        {
+            commandCalls += "!" + Index.commands[i].commandCall + "\n";
+        }
+        let replyA = "Available commands:\n" + commandCalls;
+        let replyB = "Available args: -h (e.g. !help -h)"
         msgObject.reply(replyA + "\n" + replyB);
     }
 

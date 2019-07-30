@@ -5,7 +5,7 @@ import * as ReadWrite from "./readWrite";
 import { isNullOrUndefined } from "util";
 
 const yoshinoBot: Discord.Client = new Discord.Client();
-let commands: IBotCommand[] = [];
+export let commands: IBotCommand[] = [];
 
 let guild : Discord.Guild; //Should be guild 'Ett gött gäng'
 const guildID : string = "234649966239285248"; //ID for 'Ett gött gäng'

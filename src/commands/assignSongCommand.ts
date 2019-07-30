@@ -5,7 +5,7 @@ import * as ReadWrite from "../readWrite";
 export default class assignSongCommand implements IBotCommand
 {
 
-    private readonly _command = "assign"
+    readonly commandCall = "assign"
 
     help(): string 
     {
@@ -22,10 +22,10 @@ export default class assignSongCommand implements IBotCommand
 
     isThisCommand(command: string): boolean 
     {
-        return command === this._command;
+        return command === this.commandCall;
     }
 
-    runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client): void 
+    runCommand(args: string[], msgObject: Discord.Message, botClient: Discord.Client): void 
     {
         if(args.length == 1)
         {

@@ -3,7 +3,7 @@ import * as Discord from "discord.js";
 
 let guild : Discord.Guild;
 
-function delay(ms: number) {
+export function delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 

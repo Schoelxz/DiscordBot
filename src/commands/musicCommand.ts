@@ -4,11 +4,10 @@ import * as ReadWrite from "../readWrite";
 
 export default class musicCommand implements IBotCommand {
 
-private readonly _command = "play"
+    readonly commandCall = "play";
 
     help(): string 
     {
-
         let message2 : string = "";
 
         ReadWrite.GetAllFileNamesFromDir("T:/Sounds").forEach(element => 
@@ -20,10 +19,10 @@ private readonly _command = "play"
     }
     isThisCommand(command: string): boolean 
     {
-        return command === this._command;
+        return command === this.commandCall;
     }
 
-    runCommand(args: string[], msgObject: Discord.Message, client: Discord.Client): void 
+    runCommand(args: string[], msgObject: Discord.Message, botClient: Discord.Client): void 
     {
         let path = "";
 
