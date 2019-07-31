@@ -7,7 +7,8 @@ export let config = {
         "musicCommand",
         "helpCommand",
         "assignSongCommand",
-        "assignEntryCommand"
+        "assignEntryCommand",
+        "rollCommand"
     ]
 }
 
