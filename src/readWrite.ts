@@ -8,6 +8,7 @@ export let myMap = new Map();
 
 export interface myUser
 {
+    userID: number;
     userName: string;
     songName: string;
     playOnEntry: boolean;
