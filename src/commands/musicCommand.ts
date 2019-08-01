@@ -13,7 +13,7 @@ export default class musicCommand implements IBotCommand {
         ReadWrite.GetAllFileNamesFromDir("T:/Sounds").forEach(element => 
         {
             let split_elem = element.split('.');
-            if(split_elem[split_elem.length-1] != "wav"){
+            if(split_elem[split_elem.length-1] != "wav")
                 continue;
             message2 += element + "\n";
         });
