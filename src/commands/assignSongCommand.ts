@@ -2,6 +2,8 @@ import * as Discord from "discord.js";
 import {IBotCommand} from "../api";
 import * as ReadWrite from "../readWrite";
 
+let tmpUserData : ReadWrite.IJsonUserData;
+
 export default class assignSongCommand implements IBotCommand
 {
     readonly commandCall = "assign"
@@ -30,7 +32,20 @@ export default class assignSongCommand implements IBotCommand
         {
             console.log("msgObject.author.username: " + msgObject.author.username);
             console.log("Clients song request: " + args[0]);
-            ReadWrite.AddJsonUserSongData(msgObject.author.username, args[0]);
+
+            if(ReadWrite.GetJsonUserDataFromUser(msgObject.author.username))
+            {
+                tmpUserData = ReadWrite.GetJsonUserDataFromUser(msgObject.author.username);
+                tmpUserData = ReadWrite.ProcessStandardUserData(msgObject.author, tmpUserData);
+                tmpUserData.songName = args[0];
+            }
+            else
+            {
+                tmpUserData = ReadWrite.ProcessStandardUserData(msgObject.author, tmpUserData);
+                tmpUserData.songName = args[0];
+            }
+
+            ReadWrite.AddJsonUserData(tmpUserData);
             ReadWrite.myMap.set(msgObject.author.username, args[0]);
         }
         else
