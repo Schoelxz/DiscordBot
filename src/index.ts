@@ -46,12 +46,20 @@ yoshinoBot.on("ready", () =>
 })
 yoshinoBot.on("messageDelete", dMsg => 
 {
-    if(guild != null || undefined)
+    if(guild != null && guild != undefined)
     {
+        let attachmentURLS : string = "";
+        for (const attachment of dMsg.attachments) 
+        {
+            attachmentURLS += attachment[1].url;
+        }
+        
         guild.owner.send("Message has been deleted: " 
             + "\nAuthor: " + dMsg.author 
             + "\nMessage: " + dMsg.toString()
-            + "\nCreated at: " + dMsg.createdAt.toUTCString());
+            + "\nAttachments: " + attachmentURLS
+            + "\nCreated at: " + dMsg.createdAt.toUTCString()
+            );
     }
 })
 
