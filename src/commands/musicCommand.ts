@@ -12,7 +12,11 @@ export default class musicCommand implements IBotCommand {
 
         ReadWrite.GetAllFileNamesFromDir("T:/Sounds").forEach(element => 
         {
-            message2 += element + "\n";
+            let split_elem = element.split('.');
+            if(split_elem[split_elem.length-1] == "wav")
+            {
+                message2 += element + "\n";
+            }
         });
 
         return "This command makes the bot play a sound, the sound played depends on your argument." + "\n" + "All current songs:" + "\n" + message2;
