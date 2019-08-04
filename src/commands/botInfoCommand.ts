@@ -26,7 +26,7 @@ export default class botInfoCommand implements IBotCommand {
         //slice removes yyyy-mm-dd
         var time = new Date(botClient.uptime).toISOString().slice(11, -1);
 
-        msgObject.reply("bot ready at: " + botClient.readyAt
+        msgObject.reply("bot ready at: " + botClient.readyAt.toLocaleString("sv-SE", {hour12: false})
                     + "\nbot status: " + botClient.status
                     + "\nbot uptime: " + time);
     }
