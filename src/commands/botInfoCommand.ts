@@ -22,9 +22,12 @@ export default class botInfoCommand implements IBotCommand {
 
     runCommand(args: string[], msgObject: Discord.Message, botClient: Discord.Client): void 
     {
+        //TODO print y m d aswell, not just h m s.ms
+        //slice removes yyyy-mm-dd
+        var time = new Date(botClient.uptime).toISOString().slice(11, -1);
 
-        msgObject.reply("bot ready at: " + botClient.readyAt + "\n"
-                    + "bot status: " + botClient.status
-                    + "bot uptime: " + botClient.uptime);
+        msgObject.reply("bot ready at: " + botClient.readyAt
+                    + "\nbot status: " + botClient.status
+                    + "\nbot uptime: " + time);
     }
 }
