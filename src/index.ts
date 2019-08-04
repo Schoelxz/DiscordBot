@@ -12,130 +12,148 @@ const guildID : string = "234649966239285248"; //ID for 'Ett gött gäng'
 let adminTextChannel: Discord.TextChannel;
 let guildOwner : Discord.GuildMember;
 
-try
-{
-    loadCommands(`${__dirname}/commands`)
-}
-catch(exception)
-{
-    console.log("something something unable to find directory commands: " + `${__dirname}/commands`);
-    console.log(exception);
-}
-
-yoshinoBot.on("ready", () => 
-{
-    for (const itGuild of yoshinoBot.guilds) 
-    {
-        if(itGuild[1].id === guildID)
-            guild = itGuild[1];
-    }
-
-    for(const channel of guild.channels)
-    {
-        if(channel[1].type != "text")
-            continue;
-
-        let txtChannel : Discord.TextChannel = channel[1] as Discord.TextChannel;
-        fetchOldChannelMessages(txtChannel);
-    }
-
-    ReadWrite.UpdateUserMapList();
-    guildOwner = guild.owner;
-
-    //Let us know that ther bot is online
-    guild.owner.send("Hi " + guild.owner.nickname + ".\nI am now up and running!");
-    console.log("Ready to go!");
-});
-
-yoshinoBot.on("messageDelete", dMsg => 
-{
-    if(guild != null && guild != undefined)
-    {
-        let attachmentURLS : string = "";
-        for (const attachment of dMsg.attachments) 
-        {
-            attachmentURLS += attachment[1].url;
-        }
-        
-        guild.owner.send("Message has been deleted: " 
-            + "\nAuthor: " + dMsg.author 
-            + "\nMessage: " + dMsg.toString()
-            + "\nAttachments: " + attachmentURLS
-            + "\nCreated at: " + dMsg.createdAt);
-    }
-});
-
-yoshinoBot.on("message", msg => 
-{
-    //Ignore the message if it was sent by the bot
-    if(msg.author.bot) {return;}
-
-    //Ignore messages that don't start with the prefix
-    if(!msg.content.startsWith(ConfigFile.config.prefix)) {return;}
-
-    msg.channel.startTyping();
-    //msg.channel.send(`${msg.author.username} just used a command!`);
-    handleCommand(msg);
-    
-    msg.channel.stopTyping(true);
-});
-
-yoshinoBot.on("voiceStateUpdate", (oldMember, newMember) => 
-{   
-    if(newMember.user.id === yoshinoBot.user.id)
-    {
-        console.log("voiceStateUpdate: was bot");
-        return;
-    }
-
-    //This makes sure only join (new) channel and leave channel works. No mute/deaf.
-    if(oldMember.voiceChannel === newMember.voiceChannel)
-    {
-        console.log("voiceStateUpdate: is already in channel")
-        return;
-    }
-    //Happens when leave channel.
-    else if(isNullOrUndefined(newMember.voiceChannel))
-    {
-        console.log("voiceStateUpdate: left channel")
-        return;
-    }
-
-    console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
-    if(!ReadWrite.myMap.has(newMember.user.username))
-    {
-        console.log("Won't play sound: Member with no data. User: " + newMember.user.username)
-        return;
-    }
-    else if(!ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry)
-        console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry);
-    else
-        joinVoiceChannel(newMember);
-});
-
-yoshinoBot.on("error", error =>
+//Start of index methods starts
 {
     try
     {
-        guildOwner.send(error.name + ":\n" + error.message);
+        loadCommands(`${__dirname}/commands`)
     }
-    catch
+    catch(exception)
     {
+        console.log("something something unable to find directory commands: " + `${__dirname}/commands`);
+        console.log(exception);
     }
-    console.error(error.stack + "\n");
-    console.error(error.name + ":\n" + error.message);
 
-    if(error.stack != undefined)
-    {
-        let stackError : string = error.stack as string;
-        ReadWrite.WriteFile("Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError, "./logs/errors/", error.name, ".txt");
-    }
-    else
-    {
-        ReadWrite.WriteFile("Error message:\n\n" + error.message, "./logs/", error.name, ".txt");
-    }
+    yoshinoBot.on("ready", () => 
+    {   
+        console.log("Arguments passed: \n{");
+        for (const iterator of process.argv) 
+        {
+            console.log(iterator);   
+        }
+        console.log("}");
         
-});
+        for (const itGuild of yoshinoBot.guilds) 
+        {
+            if(itGuild[1].id === guildID)
+                guild = itGuild[1];
+        }
+
+        for(const channel of guild.channels)
+        {
+            if(channel[1].type != "text")
+                continue;
+
+            let txtChannel : Discord.TextChannel = channel[1] as Discord.TextChannel;
+            fetchOldChannelMessages(txtChannel);
+        }
+
+        ReadWrite.UpdateUserMapList();
+        guildOwner = guild.owner;
+
+        let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
+        //Let us know that ther bot is online
+        guild.owner.send("Hi " + guild.owner.nickname + ".\nI am now up and running! Time: " + swedishTimeDate);
+        console.log("Ready to go!");
+    });
+
+    yoshinoBot.on("messageDelete", dMsg => 
+    {
+        if(guild != null && guild != undefined)
+        {
+            let attachmentURLS : string = "";
+            for (const attachment of dMsg.attachments) 
+            {
+                attachmentURLS += attachment[1].url;
+            }
+            
+            guild.owner.send("Message has been deleted: " 
+                + "\nAuthor: " + dMsg.author 
+                + "\nMessage: " + dMsg.toString()
+                + "\nAttachments: " + attachmentURLS
+                + "\nCreated at: " + dMsg.createdAt);
+        }
+    });
+
+    yoshinoBot.on("message", msg => 
+    {
+        //Ignore the message if it was sent by the bot
+        if(msg.author.bot) {return;}
+
+        //Ignore messages that don't start with the prefix
+        if(!msg.content.startsWith(ConfigFile.config.prefix)) {return;}
+
+        msg.channel.startTyping();
+        //msg.channel.send(`${msg.author.username} just used a command!`);
+        handleCommand(msg);
+        
+        msg.channel.stopTyping(true);
+    });
+
+    yoshinoBot.on("voiceStateUpdate", (oldMember, newMember) => 
+    {   
+        if(newMember.user.id === yoshinoBot.user.id)
+        {
+            console.log("voiceStateUpdate: was bot");
+            return;
+        }
+
+        //This makes sure only join (new) channel and leave channel works. No mute/deaf.
+        if(oldMember.voiceChannel === newMember.voiceChannel)
+        {
+            console.log("voiceStateUpdate: is already in channel")
+            return;
+        }
+        //Happens when leave channel.
+        else if(isNullOrUndefined(newMember.voiceChannel))
+        {
+            console.log("voiceStateUpdate: left channel")
+            return;
+        }
+
+        console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
+        if(!ReadWrite.myMap.has(newMember.user.username))
+        {
+            console.log("Won't play sound: Member with no data. User: " + newMember.user.username)
+            return;
+        }
+        else if(!ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry)
+            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry);
+        else
+            joinVoiceChannel(newMember);
+    });
+
+    yoshinoBot.on("error", error =>
+    {
+        let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
+        try
+        {
+            guildOwner.send(error.name + ":\n" + error.message);
+        }
+        catch
+        {
+        }
+        console.error(error.stack + "\n");
+        console.error(error.name + ":\n" + error.message);
+
+        if(error.stack != undefined)
+        {
+            let stackError : string = error.stack as string;
+            ReadWrite.WriteFile("Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError, "./logs/errors/", error.name +"_"+ swedishTimeDate, ".txt");
+        }
+        else
+        {
+            ReadWrite.WriteFile("Error message:\n\n" + error.message, "./logs/", error.name, ".txt");
+        }
+            
+    });
+
+    //bot.login(ConfigFile.config.token);
+    yoshinoBot.login(ReadWrite.GetBotToken().yoshinoToken);
+}
+//end of index methods, done.
+
+//Functions
 
 function joinVoiceChannel(guildMember : Discord.GuildMember)
 {
@@ -224,6 +242,3 @@ function fetchOldChannelMessages(channel : Discord.TextChannel)
   .then(messages => console.log(`Received ${messages.size} messages from channel ${channel.name}`))
   .catch(console.error);
 }
-
-yoshinoBot.login(ReadWrite.GetBotToken().yoshinoToken);
-//bot.login(ConfigFile.config.token);
