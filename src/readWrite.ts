@@ -86,7 +86,7 @@ export function WriteFile(fileText : string, filePath : string, fileName : strin
 {
     try
     {
-        fs.writeFileSync(filePath + fileName + fileSuffix, fileText);
+        fs.appendFileSync(filePath + fileName + fileSuffix, fileText);
         return true;
     }
     catch(exception)
