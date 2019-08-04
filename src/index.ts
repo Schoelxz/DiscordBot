@@ -10,7 +10,7 @@ export let commands: IBotCommand[] = [];
 let guild : Discord.Guild; //Should be guild 'Ett gött gäng'
 const guildID : string = "234649966239285248"; //ID for 'Ett gött gäng'
 let adminTextChannel: Discord.TextChannel;
-
+let guildOwner : Discord.GuildMember;
 
 try
 {
@@ -26,7 +26,7 @@ yoshinoBot.on("ready", () =>
 {
     for (const itGuild of yoshinoBot.guilds) 
     {
-        if(itGuild[1].id == guildID)
+        if(itGuild[1].id === guildID)
             guild = itGuild[1];
     }
 
@@ -40,10 +40,13 @@ yoshinoBot.on("ready", () =>
     }
 
     ReadWrite.UpdateUserMapList();
+    guildOwner = guild.owner;
+
     //Let us know that ther bot is online
     guild.owner.send("Hi " + guild.owner.nickname + ".\nI am now up and running!");
     console.log("Ready to go!");
-})
+});
+
 yoshinoBot.on("messageDelete", dMsg => 
 {
     if(guild != null && guild != undefined)
@@ -58,10 +61,9 @@ yoshinoBot.on("messageDelete", dMsg =>
             + "\nAuthor: " + dMsg.author 
             + "\nMessage: " + dMsg.toString()
             + "\nAttachments: " + attachmentURLS
-            + "\nCreated at: " + dMsg.createdAt.toUTCString()
-            );
+            + "\nCreated at: " + dMsg.createdAt);
     }
-})
+});
 
 yoshinoBot.on("message", msg => 
 {
@@ -76,27 +78,64 @@ yoshinoBot.on("message", msg =>
     handleCommand(msg);
     
     msg.channel.stopTyping(true);
-})
+});
 
 yoshinoBot.on("voiceStateUpdate", (oldMember, newMember) => 
-{
-    if(!(newMember.user.id === yoshinoBot.user.id)) //is bot?
+{   
+    if(newMember.user.id === yoshinoBot.user.id)
     {
-        console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
-        if(isNullOrUndefined(newMember.voiceChannel) || !ReadWrite.myMap.has(newMember.user.username))
-        {
-            console.log("Undefined channel or member without sound on bot join. User: " + newMember.user.username)
-            return;
-        }
-        else if(!ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry)
-            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry);
-        else
-            joinVoiceChannel(newMember);
+        console.log("voiceStateUpdate: was bot");
+        return;
+    }
+
+    //This makes sure only join (new) channel and leave channel works. No mute/deaf.
+    if(oldMember.voiceChannel === newMember.voiceChannel)
+    {
+        console.log("voiceStateUpdate: is already in channel")
+        return;
+    }
+    //Happens when leave channel.
+    else if(isNullOrUndefined(newMember.voiceChannel))
+    {
+        console.log("voiceStateUpdate: left channel")
+        return;
+    }
+
+    console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
+    if(!ReadWrite.myMap.has(newMember.user.username))
+    {
+        console.log("Won't play sound: Member with no data. User: " + newMember.user.username)
+        return;
+    }
+    else if(!ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry)
+        console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry);
+    else
+        joinVoiceChannel(newMember);
+});
+
+yoshinoBot.on("error", error =>
+{
+    try
+    {
+        guildOwner.send(error.name + ":\n" + error.message);
+    }
+    catch
+    {
+    }
+    console.error(error.stack + "\n");
+    console.error(error.name + ":\n" + error.message);
+
+    if(error.stack != undefined)
+    {
+        let stackError : string = error.stack as string;
+        ReadWrite.WriteFile("Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError, "./logs/errors/", error.name, ".txt");
     }
     else
-        console.log("voiceStateUpdate: was bot");
-
-})
+    {
+        ReadWrite.WriteFile("Error message:\n\n" + error.message, "./logs/", error.name, ".txt");
+    }
+        
+});
 
 function joinVoiceChannel(guildMember : Discord.GuildMember)
 {

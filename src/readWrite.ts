@@ -81,3 +81,17 @@ export function GetBotToken(): botTokens
     botTokens = JSON.parse(ReadFilePath(ConfigFile.config.tokenPath));
     return botTokens;
 }
+
+export function WriteFile(fileText : string, filePath : string, fileName : string, fileSuffix : string) : boolean
+{
+    try
+    {
+        fs.writeFileSync(filePath + fileName + fileSuffix, fileText);
+        return true;
+    }
+    catch(exception)
+    {
+        console.error(exception);
+        return false;
+    }
+}
