@@ -84,9 +84,15 @@ export function GetBotToken(): botTokens
 
 export function WriteFile(fileText : string, filePath : string, fileName : string, fileSuffix : string) : boolean
 {
+    
     try
     {
-        fs.appendFileSync(filePath + fileName + fileSuffix, fileText);
+        if(!fs.existsSync(filePath))
+        {
+            fs.mkdirSync(filePath);
+            console.warn("directory was created at: " + filePath);
+        }
+        fs.writeFileSync(filePath + fileName + fileSuffix, fileText);
         return true;
     }
     catch(exception)
