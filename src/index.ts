@@ -138,17 +138,25 @@ let guildOwner : Discord.GuildMember;
         catch
         {
         }
-        console.error(error.stack + "\n");
-        console.error(error.name + ":\n" + error.message);
-
+        console.error("Error stack:[" + error.stack + "] end of stack.");
+        console.error("Error name:[" + error.name + "]:\nError message:[" + error.message + "] end of message.");
+        
         if(error.stack != undefined)
         {
             let stackError : string = error.stack as string;
-            ReadWrite.WriteFile("Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError, "./logs/errors/", error.name +"_"+ swedishTimeDate, ".txt");
+            ReadWrite.WriteFile(
+            "Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError,
+            "./logs/errors/",
+            error.name +"_"+ swedishTimeDate,
+            ".txt");
         }
         else
         {
-            ReadWrite.WriteFile("Error message:\n\n" + error.message, "./logs/", error.name, ".txt");
+            ReadWrite.WriteFile(
+            "Error message:\n\n" + error.message,
+            "./logs/",
+            error.name +"_"+ swedishTimeDate,
+            ".txt");
         }
             
     });
@@ -274,6 +282,7 @@ function sendRandomQuotes()
         .catch(console.error);
 }
 
+//TODO: finns en färdig funktion för det här redan client.setInterval(fn, delay, ...args)
 async function timerUpdate()
 {
     const second = 1000;
