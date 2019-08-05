@@ -2,6 +2,7 @@ import * as Discord from "discord.js";
 import * as ConfigFile from "./config";
 import { IBotCommand } from "./api";
 import * as ReadWrite from "./readWrite";
+import * as ExtraFunc from "./extraFunctions"
 import { isNullOrUndefined } from "util";
 
 const yoshinoBot: Discord.Client = new Discord.Client();
@@ -241,4 +242,44 @@ function fetchOldChannelMessages(channel : Discord.TextChannel)
     channel.fetchMessages()
   .then(messages => console.log(`Received ${messages.size} messages from channel ${channel.name}`))
   .catch(console.error);
+}
+
+function sendRandomQuotes()
+{
+    const quotesPath = "T:/MyDiscordBot/pictures/inspirobot quotes/";
+    const allQuotesName = ReadWrite.GetAllFileNamesFromDir(quotesPath);
+    const eggChannelID : string = "250623355537981440";
+    const eggChannel : Discord.TextChannel = yoshinoBot.channels.get(eggChannelID) as Discord.TextChannel;
+
+    let randomNumber : number = Math.floor(Math.random() * (allQuotesName.length - 1));
+
+    if (randomNumber > (allQuotesName.length -1) || randomNumber < 0)
+    {
+        randomNumber = 0;
+    }
+
+    let randomQuote : string = quotesPath + allQuotesName[randomNumber];
+
+    eggChannel.send({
+        files: [{
+          attachment: randomQuote,
+          name: allQuotesName[randomNumber]
+        }]
+      })
+        .then(sent => console.log("sent a random quote to egg"))
+        .catch(console.error);
+}
+
+async function timerUpdate()
+{
+    const second = 1000;
+    const minute = second*60;
+    const hour = minute*60;
+
+    for (let index = 0; index < 100; index++) 
+    {
+        await ExtraFunc.delay(hour * 4);
+
+        await sendRandomQuotes();
+    }
 }
