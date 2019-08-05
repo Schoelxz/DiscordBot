@@ -55,6 +55,10 @@ let guildOwner : Discord.GuildMember;
         let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
         //Let us know that ther bot is online
         guild.owner.send("Hi " + guild.owner.nickname + ".\nI am now up and running! Time: " + swedishTimeDate);
+
+        //start sending quotes every 4 hours.
+        timerUpdate();
+
         console.log("Ready to go!");
     });
 
