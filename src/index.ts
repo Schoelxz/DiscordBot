@@ -122,8 +122,8 @@ let guildOwner : Discord.GuildMember;
             console.log("Won't play sound: Member with no data. User: " + newMember.user.username)
             return;
         }
-        else if(!ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry)
-            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonUserDataFromUser(newMember.user.username).playOnEntry);
+        else if(!ReadWrite.GetJsonFromUser(newMember.user.username).playOnEntry)
+            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonFromUser(newMember.user.username).playOnEntry);
         else
             joinVoiceChannel(newMember);
     });

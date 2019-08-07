@@ -33,20 +33,40 @@ export default class assignSongCommand implements IBotCommand
             console.log("msgObject.author.username: " + msgObject.author.username);
             console.log("Clients song request: " + args[0]);
 
-            if(ReadWrite.GetJsonUserDataFromUser(msgObject.author.username))
+            try
             {
-                tmpUserData = ReadWrite.GetJsonUserDataFromUser(msgObject.author.username);
+                tmpUserData = ReadWrite.GetJsonFromUser(msgObject.author.username);
                 tmpUserData = ReadWrite.ProcessStandardUserData(msgObject.author, tmpUserData);
                 tmpUserData.songName = args[0];
+    
+                ReadWrite.AddJsonUserData(tmpUserData);
+                ReadWrite.myMap.set(msgObject.author.username, args[0]);
+                if(ReadWrite.myMap.has(msgObject.author.username))
+                {
+                    console.log(msgObject.author.username + " is now mapped!");
+                }
+                else
+                {
+                    console.log(msgObject.author.username + " is not mapped, very sad.")
+                    ReadWrite.UpdateUserMapList();
+                    if(ReadWrite.myMap.has(msgObject.author.username))
+                    {
+                        console.log(msgObject.author.username + " is now mapped!");
+                    }
+                    else
+                    {
+                        console.log(msgObject.author.username + " is not mapped, very sad.")
+                    }
+                }
+                
             }
-            else
+            catch(exception)
             {
-                tmpUserData = ReadWrite.ProcessStandardUserData(msgObject.author, tmpUserData);
-                tmpUserData.songName = args[0];
+                console.error("assignSongCommand went bad:")
+                console.error(exception);
+                msgObject.reply("Error: Something went wrong...")
             }
-
-            ReadWrite.AddJsonUserData(tmpUserData);
-            ReadWrite.myMap.set(msgObject.author.username, args[0]);
+            
         }
         else
             msgObject.reply("Error: Argument fault..");
