@@ -130,6 +130,7 @@ let guildOwner : Discord.GuildMember;
 
     yoshinoBot.on("error", error =>
     {
+        const errorlogDir = "T:/MyDiscordBot/logs/errors/";
         let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
         try
         {
@@ -146,7 +147,7 @@ let guildOwner : Discord.GuildMember;
             let stackError : string = error.stack as string;
             ReadWrite.WriteFile(
             "Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError,
-            "./logs/errors/",
+            errorlogDir,
             error.name +"_"+ swedishTimeDate,
             ".txt");
         }
@@ -154,7 +155,7 @@ let guildOwner : Discord.GuildMember;
         {
             ReadWrite.WriteFile(
             "Error message:\n\n" + error.message,
-            "./logs/",
+            errorlogDir,
             error.name +"_"+ swedishTimeDate,
             ".txt");
         }
