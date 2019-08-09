@@ -261,8 +261,8 @@ function sendRandomQuotes()
 {
     const quotesPath = "T:/MyDiscordBot/pictures/inspirobot quotes/";
     const allQuotesName = ReadWrite.GetAllFileNamesFromDir(quotesPath);
-    const eggChannelID : string = "250623355537981440";
-    const eggChannel : Discord.TextChannel = yoshinoBot.channels.get(eggChannelID) as Discord.TextChannel;
+    const textChannelID : string = "609212232311504896";
+    const textChannel : Discord.TextChannel = yoshinoBot.channels.get(textChannelID) as Discord.TextChannel;
 
     let randomNumber : number = Math.floor(Math.random() * (allQuotesName.length - 1));
 
@@ -273,7 +273,7 @@ function sendRandomQuotes()
 
     let randomQuote : string = quotesPath + allQuotesName[randomNumber];
 
-    eggChannel.send({
+    textChannel.send({
         files: [{
           attachment: randomQuote,
           name: allQuotesName[randomNumber]
@@ -292,7 +292,7 @@ async function timerUpdate()
 
     for (let index = 0; index < 100; index++) 
     {
-        await ExtraFunc.delay(hour * 4);
+        await ExtraFunc.delay(hour * 1.5);
 
         await sendRandomQuotes();
     }
