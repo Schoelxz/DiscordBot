@@ -9,9 +9,6 @@ let tmpUserData : IJsonUserData;
 
 export let myMap = new Map();
 
-//TODO: have user data files be renamed with tag to avoid same name users.
-//OR: have the user data files only use the userID as name instead, the tags can be changed with Nitro users.
-//CONCLUSION: 2nd option is better. this makes tags an uneccesary property and it's more reliable, and easier to fix.
 export interface IJsonUserData
 {
     userID: string;
