@@ -25,6 +25,17 @@ let guildOwner : Discord.GuildMember;
         console.log(exception);
     }
 
+    startEventListeners();
+
+    //bot.login(ConfigFile.config.token);
+    yoshinoBot.login(ReadWrite.GetBotToken().yoshinoToken);
+}
+//end of index methods, done.
+
+//Functions
+
+function startEventListeners()
+{
     yoshinoBot.on("ready", () => 
     {   
         console.log("Arguments passed: \n{");
@@ -56,8 +67,8 @@ let guildOwner : Discord.GuildMember;
         //Let us know that ther bot is online
         guild.owner.send("Hi " + guild.owner.nickname + ".\nI am now up and running! Time: " + swedishTimeDate);
 
-        //start sending quotes every 4 hours.
-        timerUpdate();
+        //start sending quotes every 1.5 hours.
+        yoshinoBot.setInterval(sendRandomQuotes, (1000*60*60*1.5), "");
 
         console.log("Ready to go!");
     });
@@ -83,8 +94,9 @@ let guildOwner : Discord.GuildMember;
     yoshinoBot.on("message", msg => 
     {
         //Ignore the message if it was sent by the bot
-        if(msg.author.bot) {return;}
-
+        if(msg.author.bot) 
+            return;
+        
         //Ignore messages that don't start with the prefix
         if(!msg.content.startsWith(ConfigFile.config.prefix)) {return;}
 
@@ -117,13 +129,13 @@ let guildOwner : Discord.GuildMember;
         }
 
         console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
-        if(!ReadWrite.myMap.has(newMember.user.username))
+        if(!ReadWrite.myMap.has(newMember.user.id))
         {
             console.log("Won't play sound: Member with no data. User: " + newMember.user.username)
             return;
         }
-        else if(!ReadWrite.GetJsonFromUser(newMember.user.username).playOnEntry)
-            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonFromUser(newMember.user.username).playOnEntry);
+        else if(!ReadWrite.GetJsonFromUser(newMember.user.id).playOnEntry)
+            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonFromUser(newMember.user.id).playOnEntry);
         else
             joinVoiceChannel(newMember);
     });
@@ -161,36 +173,32 @@ let guildOwner : Discord.GuildMember;
         }
             
     });
-
-    //bot.login(ConfigFile.config.token);
-    yoshinoBot.login(ReadWrite.GetBotToken().yoshinoToken);
 }
-//end of index methods, done.
 
-//Functions
-
-function joinVoiceChannel(guildMember : Discord.GuildMember)
+async function joinVoiceChannel(guildMember : Discord.GuildMember)
 {
-    console.log("joinVoiceChannel start");
-    console.log("voiceStateUpdate: " + guildMember.user.username);
-    console.log("voice channel: " + guildMember.voiceChannel.name);
-
-    let voiceChannel = guildMember.voiceChannel;
-    
-    console.log("song: " + ReadWrite.myMap.get(guildMember.user.username));
-
+    const voiceChannel = guildMember.voiceChannel;
     const broadcast = yoshinoBot.createVoiceBroadcast();
-    const streamOptions = {seek: 0, volume: 1, passes: 3};
-
+    const streamOptions = {seek: 0, volume: 0.5, passes: 3};
+    
     voiceChannel.join()
-    .then(connection => 
+        .then(connection => 
         {
-        const dispatcher = connection.playBroadcast(broadcast, streamOptions);
-        broadcast.playFile(`T:/Sounds/` + ReadWrite.myMap.get(guildMember.user.username));
-    })
-    .catch(console.error);
-  
-    console.log("joinVoiceChannel end");
+            const receiver = connection.createReceiver();
+            const dispatcher = connection.playBroadcast(broadcast, streamOptions);
+            console.log("volumeDecibels: " + dispatcher.volumeDecibels);
+            broadcast.playFile(`T:/Sounds/` + ReadWrite.myMap.get(guildMember.user.id));
+            console.log("Played sound at channel: " + guildMember.voiceChannel.name + " " + ReadWrite.myMap.get(guildMember.user.id));
+        })
+        .catch(console.error);
+}
+
+async function printStuff(connection : Discord.VoiceConnection)
+{
+    while(!connection.speaking)
+        console.log(connection.dispatcher.time);
+    while(connection.speaking)
+        console.log("volumeDecibels: " + connection.dispatcher.volumeDecibels);
 }
 
 async function handleCommand(msg: Discord.Message)
@@ -204,10 +212,10 @@ async function handleCommand(msg: Discord.Message)
         try
         {
             //Check our command class is the correct one
-            if(!commandClass.isThisCommand(command)) { continue; }
+            if(!commandClass.isThisCommand(command))
+              continue;
 
             for(const arg of args)
-            {
                 if(arg === "-h")
                 {
                     await msg.reply(commandClass.help())
@@ -215,7 +223,6 @@ async function handleCommand(msg: Discord.Message)
                     .catch(console.error);
                     return;
                 }
-            }
 
             //Pause execution whilst we run the command's code
             await commandClass.runCommand(args, msg, yoshinoBot);
@@ -232,43 +239,60 @@ function loadCommands(commandsPath: string)
     console.log("Loading commands...");
     //Exit if there are no commands
     if(!ConfigFile.config.commands || (ConfigFile.config.commands as string[]).length === 0)
-    {
         return;
-    }
-
     //Loop through all of the commands in our config file
     for (const commandName of ConfigFile.config.commands as string[])
     {
         const commandsClass = require(`${commandsPath}/${commandName}`).default;
-
         const command = new commandsClass() as IBotCommand;
-
         commands.push(command);
-
     }
-
     console.log("Commands loaded!");
 }
 
 function fetchOldChannelMessages(channel : Discord.TextChannel)
 {
     channel.fetchMessages()
-  .then(messages => console.log(`Received ${messages.size} messages from channel ${channel.name}`))
-  .catch(console.error);
+        .then(messages => console.log(`Received ${messages.size} messages from channel ${channel.name}`))
+        .catch(console.error);
 }
 
-function sendRandomQuotes()
+export function sendRandomQuotes(textChannelID : string)
 {
+    if(textChannelID == "" || isNullOrUndefined(textChannelID))
+    {
+        textChannelID = "609212232311504896";
+    }
     const quotesPath = "T:/MyDiscordBot/pictures/inspirobot quotes/";
     const allQuotesName = ReadWrite.GetAllFileNamesFromDir(quotesPath);
-    const textChannelID : string = "609212232311504896";
+    if(allQuotesName.length == 0)
+    {
+        console.error("Error: Could not find any quotes or files.");
+        return;
+    }
+    if(!yoshinoBot.channels.has(textChannelID))
+    {
+        console.error("Error: Could not send quote, textchannel does not exist");
+        return;
+    }
+        
     const textChannel : Discord.TextChannel = yoshinoBot.channels.get(textChannelID) as Discord.TextChannel;
-
     let randomNumber : number = Math.floor(Math.random() * (allQuotesName.length - 1));
 
     if (randomNumber > (allQuotesName.length -1) || randomNumber < 0)
-    {
         randomNumber = 0;
+
+    let tries : number = 0;
+    while(!allQuotesName[randomNumber].endsWith(".jpg"))
+    {
+        if(tries > 10)
+            return;
+
+        tries++;
+        randomNumber = Math.floor(Math.random() * (allQuotesName.length - 1));
+        if (randomNumber > (allQuotesName.length -1) || randomNumber < 0)
+            randomNumber = 0;
+        console.log("quote not a jpg, num of tries: " + tries);
     }
 
     let randomQuote : string = quotesPath + allQuotesName[randomNumber];
@@ -279,21 +303,6 @@ function sendRandomQuotes()
           name: allQuotesName[randomNumber]
         }]
       })
-        .then(sent => console.log("sent a random quote to egg"))
+        .then(sent => console.log("sent a random quote"))
         .catch(console.error);
-}
-
-//TODO: finns en färdig funktion för det här redan client.setInterval(fn, delay, ...args)
-async function timerUpdate()
-{
-    const second = 1000;
-    const minute = second*60;
-    const hour = minute*60;
-
-    for (let index = 0; index < 100; index++) 
-    {
-        await ExtraFunc.delay(hour * 1.5);
-
-        await sendRandomQuotes();
-    }
 }

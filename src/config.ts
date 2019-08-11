@@ -9,7 +9,8 @@ export let config = {
         "assignSongCommand",
         "assignEntryCommand",
         "rollCommand",
-        "botInfoCommand"
+        "botInfoCommand",
+        "quoteCommand"
     ]
 }
 
