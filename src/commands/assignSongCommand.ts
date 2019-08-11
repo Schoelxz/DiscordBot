@@ -35,13 +35,13 @@ export default class assignSongCommand implements IBotCommand
 
             try
             {
-                tmpUserData = ReadWrite.GetJsonFromUser(msgObject.author.username);
+                tmpUserData = ReadWrite.GetJsonFromUser(msgObject.author.id);
                 tmpUserData = ReadWrite.ProcessStandardUserData(msgObject.author, tmpUserData);
                 tmpUserData.songName = args[0];
     
                 ReadWrite.AddJsonUserData(tmpUserData);
-                ReadWrite.myMap.set(msgObject.author.username, args[0]);
-                if(ReadWrite.myMap.has(msgObject.author.username))
+                ReadWrite.myMap.set(msgObject.author.id, args[0]);
+                if(ReadWrite.myMap.has(msgObject.author.id))
                 {
                     console.log(msgObject.author.username + " is now mapped!");
                 }
@@ -49,7 +49,7 @@ export default class assignSongCommand implements IBotCommand
                 {
                     console.log(msgObject.author.username + " is not mapped, very sad.")
                     ReadWrite.UpdateUserMapList();
-                    if(ReadWrite.myMap.has(msgObject.author.username))
+                    if(ReadWrite.myMap.has(msgObject.author.id))
                     {
                         console.log(msgObject.author.username + " is now mapped!");
                     }

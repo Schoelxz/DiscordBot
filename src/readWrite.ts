@@ -9,6 +9,9 @@ let tmpUserData : IJsonUserData;
 
 export let myMap = new Map();
 
+//TODO: have user data files be renamed with tag to avoid same name users.
+//OR: have the user data files only use the userID as name instead, the tags can be changed with Nitro users.
+//CONCLUSION: 2nd option is better. this makes tags an uneccesary property and it's more reliable, and easier to fix.
 export interface IJsonUserData
 {
     userID: string;
@@ -27,7 +30,8 @@ export function AddJsonUserData(userData: IJsonUserData): void
     console.log("Trying to Add JSON data for: " + userData.userName);
     tmpUserData = userData;
 
-    fs.writeFileSync(usersDataPath + "/" + tmpUserData.userName + ".json", JSON.stringify(tmpUserData));
+    //JSON.stringify(text, null, pretty print formatting)
+    fs.writeFileSync(usersDataPath + "/" + tmpUserData.userID + ".json", JSON.stringify(tmpUserData, null, 2));
 }
 
 export function ProcessStandardUserData(user : Discord.User, userData: IJsonUserData) : IJsonUserData
@@ -48,23 +52,23 @@ export function GetAllFileNamesFromDir(directory : string) : string[]
 }
 
 //Creates new data if data does not exist. New data will only contain username.
-export function GetJsonFromUser(clientUserName : string) : IJsonUserData
+export function GetJsonFromUser(userID : string) : IJsonUserData
 {
     //Check if data exists
-    if(fs.existsSync(usersDataPath + "/" + clientUserName + ".json"))
+    if(fs.existsSync(usersDataPath + "/" + userID + ".json"))
     {
-        let fileContent = fs.readFileSync(usersDataPath + "/" + clientUserName + ".json", `utf8`);
+        let fileContent = fs.readFileSync(usersDataPath + "/" + userID + ".json", `utf8`);
         tmpUserData = JSON.parse(fileContent);
         return tmpUserData;
     }
     //Create new data for new user
     else
     {
-        console.log("Creating new user data for: " + clientUserName);
-        tmpUserData.userName = clientUserName;
+        console.log("Creating new user data for: " + userID);
+        tmpUserData.userName = userID;
         try 
         {
-            fs.writeFileSync(usersDataPath + "/" + clientUserName + ".json", JSON.stringify(tmpUserData));
+            fs.writeFileSync(usersDataPath + "/" + userID + ".json", JSON.stringify(tmpUserData));
         } 
         catch (exception) 
         {
@@ -72,7 +76,7 @@ export function GetJsonFromUser(clientUserName : string) : IJsonUserData
             console.error(exception);
         }
         
-        let fileContent = fs.readFileSync(usersDataPath + "/" + clientUserName + ".json", `utf8`);
+        let fileContent = fs.readFileSync(usersDataPath + "/" + userID + ".json", `utf8`);
         tmpUserData = JSON.parse(fileContent);
         return tmpUserData;
     }
@@ -87,7 +91,7 @@ export function UpdateUserMapList() : void
     {
         let file = fs.readFileSync(usersDataPath + "/" + sumFiles[i], "utf8");
         tmpUserData = JSON.parse(file);
-        myMap.set(tmpUserData.userName, tmpUserData.songName);
+        myMap.set(tmpUserData.userID, tmpUserData.songName);
     }
     console.log("Map List Updated!");
 }

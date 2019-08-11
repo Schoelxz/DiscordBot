@@ -19,7 +19,7 @@ export default class themeCommand implements IBotCommand
 
     runCommand(args: string[], msgObject: Discord.Message, botClient: Discord.Client): void 
     {
-        if(!ReadWrite.myMap.has(msgObject.author.username))
+        if(!ReadWrite.myMap.has(msgObject.author.id))
         {
             console.log(msgObject.author + " is the one checked for mapping!")
             msgObject.reply("Error: no data found.")
@@ -32,7 +32,7 @@ export default class themeCommand implements IBotCommand
             {
                 try
                 {
-                    let userData = ReadWrite.GetJsonFromUser(msgObject.author.username);
+                    let userData = ReadWrite.GetJsonFromUser(msgObject.author.id);
                     userData.playOnEntry = true;
                     ReadWrite.AddJsonUserData(userData);
                 }
@@ -47,7 +47,7 @@ export default class themeCommand implements IBotCommand
             {
                 try
                 {
-                    let userData = ReadWrite.GetJsonFromUser(msgObject.author.username);
+                    let userData = ReadWrite.GetJsonFromUser(msgObject.author.id);
                     userData.playOnEntry = false;
                     ReadWrite.AddJsonUserData(userData);
                 }
