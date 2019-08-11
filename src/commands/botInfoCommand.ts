@@ -4,12 +4,12 @@ import {IBotCommand} from "../api";
 export default class botInfoCommand implements IBotCommand {
 
     readonly statuses = "status number meaning: "
-    + "\n" + "READY: 0"
-    + "\n" + "CONNECTING: 1"
-    + "\n" + "RECONNECTING: 2"
-    + "\n" + "IDLE: 3"
-    + "\n" + "NEARLY: 4"
-    + "\n" + "DISCONNECTED: 5";
+    + "\nREADY: 0"
+    + "\nCONNECTING: 1"
+    + "\nRECONNECTING: 2"
+    + "\nIDLE: 3"
+    + "\nNEARLY: 4"
+    + "\nDISCONNECTED: 5";
 
     readonly commandCall = "info"
 
@@ -26,8 +26,8 @@ export default class botInfoCommand implements IBotCommand {
         //slice removes yyyy-mm-dd
         var time = new Date(botClient.uptime).toISOString().slice(11, -1);
 
-        msgObject.reply("bot ready at: " + botClient.readyAt.toLocaleString("sv-SE", {hour12: false})
-                    + "\nbot status: " + botClient.status
-                    + "\nbot uptime: " + time);
+        msgObject.reply("I was ready at: " + botClient.readyAt.toLocaleString("sv-SE", {hour12: false})
+                    + "\nmy status: " + botClient.status
+                    + "\nmy uptime: " + time);
     }
 }
