@@ -36,27 +36,20 @@ export default class assignSongCommand implements IBotCommand
             try
             {
                 tmpUserData = ReadWrite.GetJsonFromUser(msgObject.author.id);
-                tmpUserData = ReadWrite.ProcessStandardUserData(msgObject.author, tmpUserData);
                 tmpUserData.songName = args[0];
-    
+
                 ReadWrite.AddJsonUserData(tmpUserData);
                 ReadWrite.myMap.set(msgObject.author.id, args[0]);
                 if(ReadWrite.myMap.has(msgObject.author.id))
-                {
                     console.log(msgObject.author.username + " is now mapped!");
-                }
                 else
                 {
                     console.log(msgObject.author.username + " is not mapped, very sad.")
                     ReadWrite.UpdateUserMapList();
                     if(ReadWrite.myMap.has(msgObject.author.id))
-                    {
                         console.log(msgObject.author.username + " is now mapped!");
-                    }
                     else
-                    {
                         console.log(msgObject.author.username + " is not mapped, very sad.")
-                    }
                 }
                 
             }
