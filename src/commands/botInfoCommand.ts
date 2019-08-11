@@ -25,9 +25,15 @@ export default class botInfoCommand implements IBotCommand {
         //TODO print y m d aswell, not just h m s.ms
         //slice removes yyyy-mm-dd
         var time = new Date(botClient.uptime).toISOString().slice(11, -1);
+        let botGuilds : string = "";
+        for (const guild of botClient.guilds) 
+        {
+            botGuilds = guild[1].name + "\n";
+        } 
 
         msgObject.reply("I was ready at: " + botClient.readyAt.toLocaleString("sv-SE", {hour12: false})
                     + "\nmy status: " + botClient.status
-                    + "\nmy uptime: " + time);
+                    + "\nmy uptime: " + time
+                    + "\nmy guilds: " + botGuilds);
     }
 }
