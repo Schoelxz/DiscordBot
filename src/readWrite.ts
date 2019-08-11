@@ -3,7 +3,6 @@ import * as ConfigFile from "./config";
 import * as Discord from 'discord.js';
 
 const usersDataPath = "../userData";
-//const usersDataPath = "T:/Workspace/Visual Studio Code/DiscordBotJS/userData"
 let botTokens: botTokens;
 let tmpUserData : IJsonUserData;
 
@@ -11,10 +10,10 @@ export let myMap = new Map();
 
 export interface IJsonUserData
 {
-    userID: string;
-    userName: string;
-    songName: string;
-    playOnEntry: boolean;
+    userID?: string;
+    userName?: string;
+    songName?: string;
+    playOnEntry?: boolean;
 }
 
 interface botTokens
@@ -26,16 +25,8 @@ export function AddJsonUserData(userData: IJsonUserData): void
 {
     console.log("Trying to Add JSON data for: " + userData.userName);
     tmpUserData = userData;
-
-    //JSON.stringify(text, null, pretty print formatting)
+    CheckAndDefineData(tmpUserData);
     fs.writeFileSync(usersDataPath + "/" + tmpUserData.userID + ".json", JSON.stringify(tmpUserData, null, 2));
-}
-
-export function ProcessStandardUserData(user : Discord.User, userData: IJsonUserData) : IJsonUserData
-{
-    userData.userID = user.id;
-    userData.userName = user.username;
-    return userData;
 }
 
 export function GetAllUsersJsonFileNames() : string[]
@@ -51,30 +42,32 @@ export function GetAllFileNamesFromDir(directory : string) : string[]
 //Creates new data if data does not exist. New data will only contain username.
 export function GetJsonFromUser(userID : string) : IJsonUserData
 {
-    //Check if data exists
-    if(fs.existsSync(usersDataPath + "/" + userID + ".json"))
-    {
-        let fileContent = fs.readFileSync(usersDataPath + "/" + userID + ".json", `utf8`);
-        tmpUserData = JSON.parse(fileContent);
-        return tmpUserData;
-    }
-    //Create new data for new user
-    else
-    {
-        console.log("Creating new user data for: " + userID);
-        tmpUserData.userName = userID;
-        try 
+    try
         {
-            fs.writeFileSync(usersDataPath + "/" + userID + ".json", JSON.stringify(tmpUserData));
-        } 
-        catch (exception) 
+        //Check if data exists
+        if(fs.existsSync(usersDataPath + "/" + userID + ".json"))
         {
-            console.log("REEEEEEEEEEEEEEEEEEEEEEEE");
-            console.error(exception);
+            let fileContent = fs.readFileSync(usersDataPath + "/" + userID + ".json", `utf8`);
+            tmpUserData = JSON.parse(fileContent);
+            CheckAndDefineData(tmpUserData);
+            return tmpUserData;
         }
-        
-        let fileContent = fs.readFileSync(usersDataPath + "/" + userID + ".json", `utf8`);
-        tmpUserData = JSON.parse(fileContent);
+        //Create new data for new user
+        else
+        {
+            console.log("Creating new user data for: " + userID);
+            tmpUserData.userID = userID;
+            AddJsonUserData(tmpUserData);
+            let fileContent = fs.readFileSync(usersDataPath + "/" + userID + ".json", `utf8`);
+            tmpUserData = JSON.parse(fileContent);
+            return tmpUserData;
+        }
+    }
+    catch(exception)
+    {
+        //TODO could change this catch return to undefined, and make this function be able to return undefined aswell.
+        console.error("Error in readWrite in GetJsonFromUser: ");
+        console.error(exception);
         return tmpUserData;
     }
 }
@@ -88,6 +81,9 @@ export function UpdateUserMapList() : void
     {
         let file = fs.readFileSync(usersDataPath + "/" + sumFiles[i], "utf8");
         tmpUserData = JSON.parse(file);
+        //console.log(CheckAndDefineData(tmpUserData) + " for " + tmpUserData.userName);
+        if(CheckAndDefineData(tmpUserData))
+            fs.writeFileSync(usersDataPath + "/" + sumFiles[i], JSON.stringify(tmpUserData, null, 2));
         myMap.set(tmpUserData.userID, tmpUserData.songName);
     }
     console.log("Map List Updated!");
@@ -122,4 +118,29 @@ export function WriteFile(fileText : string, filePath : string, fileName : strin
         console.error(exception);
         return false;
     }
+}
+
+/*
+Returns false if the data is as it should be.
+Returns true if the data has been changed in some way i.e. defined.
+*/
+function CheckAndDefineData(currentData : IJsonUserData) : boolean
+{
+    let dataBeforeCheck : string = JSON.stringify(currentData, null, 2);
+
+    if(currentData.userID == undefined || currentData.userID == "")
+        currentData.userID = "NoID";
+    if(currentData.userName == undefined || currentData.userName == "")
+        currentData.userName = "NoName"
+    if(currentData.songName == undefined || currentData.songName == "")
+        currentData.songName = "NoSong";
+    if(currentData.playOnEntry == undefined)
+        currentData.playOnEntry = false;
+
+    let dataAfterCheck : string = JSON.stringify(currentData, null, 2);
+    
+    if(dataBeforeCheck == dataAfterCheck)
+        return false;
+    else
+        return true;
 }

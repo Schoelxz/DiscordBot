@@ -28,6 +28,11 @@ export default class musicCommand implements IBotCommand {
 
     runCommand(args: string[], msgObject: Discord.Message, botClient: Discord.Client): void 
     {
+        if(botClient.voiceConnections.size == 0)
+        {
+            msgObject.reply("Error: I am not in a voice channel right now. If you are in one, use !join and I'll be there!");
+            return;
+        }
         let path = "";
 
         for(const arg of args)
@@ -38,20 +43,33 @@ export default class musicCommand implements IBotCommand {
                 console.log(path);
             }
             else
-                path = "HateItHateIt.wav";
+                msgObject.reply("Error: Too many arguments...")
         }
 
+       const broadcast = botClient.createVoiceBroadcast();
+       broadcast.playFile(`T:/Sounds/` + path);
+        // Play sound in all voice connections that the client is in
+        console.log("size of voice connections: " + botClient.voiceConnections.size);
+        for (const connection of botClient.voiceConnections.values()) 
+        {
+            console.log("playing broadcast in: " + connection.channel.name);
+            connection.playBroadcast(broadcast);
+        }
+    }
+}
+
+        /*
+        const broadcast = botClient.createVoiceBroadcast();
+        const streamOptions = {seek: 0, volume: 0.5, passes: 3};
         var voiceChannel = msgObject.member.voiceChannel;
         voiceChannel.join().then(connection => {
 
-            const dispatcher = connection.playFile(`T:/Sounds/` + path);
-            dispatcher.on("end", end => 
-            {
-                //voiceChannel.leave();
+            const receiver = connection.createReceiver();
+            const dispatcher = connection.playBroadcast(broadcast, streamOptions);
+            broadcast.playFile(`T:/Sounds/` + path);
+            dispatcher.on("end", end =>{
+                broadcast.destroy();
             })
 
-
         }).catch(err => console.log(err));
-
-    }
-}
+        */
