@@ -11,7 +11,8 @@ export let config = {
         "rollCommand",
         "botInfoCommand",
         "quoteCommand",
-        "stopCommand"
+        "stopCommand",
+        "assignRoleCommand"
     ]
 }
 
