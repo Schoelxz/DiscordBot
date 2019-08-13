@@ -32,9 +32,9 @@ export default class themeCommand implements IBotCommand
             {
                 try
                 {
-                    let userData = ReadWrite.GetJsonFromUser(msgObject.author.id);
+                    let userData = ReadWrite.GetJsonFromUser(msgObject.author);
                     userData.playOnEntry = true;
-                    ReadWrite.AddJsonUserData(userData);
+                    ReadWrite.AddJsonUserDataFile(msgObject.author, userData);
                 }
                 catch(exception)
                 {
@@ -47,9 +47,9 @@ export default class themeCommand implements IBotCommand
             {
                 try
                 {
-                    let userData = ReadWrite.GetJsonFromUser(msgObject.author.id);
+                    let userData = ReadWrite.GetJsonFromUser(msgObject.author);
                     userData.playOnEntry = false;
-                    ReadWrite.AddJsonUserData(userData);
+                    ReadWrite.AddJsonUserDataFile(msgObject.author, userData);
                 }
                 catch(exception)
                 {

@@ -60,7 +60,6 @@ function startEventListeners()
             fetchOldChannelMessages(txtChannel);
         }
 
-        ReadWrite.UpdateUserMapList();
         guildOwner = guild.owner;
 
         let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
@@ -96,7 +95,7 @@ function startEventListeners()
         //Ignore the message if it was sent by the bot
         if(msg.author.bot) 
             return;
-        
+
         //Ignore messages that don't start with the prefix
         if(!msg.content.startsWith(ConfigFile.config.prefix)) {return;}
 
@@ -128,14 +127,16 @@ function startEventListeners()
             return;
         }
 
+        ReadWrite.UpdateUserSongMapList(newMember.user);
+
         console.log("voiceStateUpdate: " + "old: " + oldMember.user.username + " new: " + newMember.user.username);
         if(!ReadWrite.myMap.has(newMember.user.id))
         {
             console.log("Won't play sound: Member with no data. User: " + newMember.user.username)
             return;
         }
-        else if(!ReadWrite.GetJsonFromUser(newMember.user.id).playOnEntry)
-            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonFromUser(newMember.user.id).playOnEntry);
+        else if(!ReadWrite.GetJsonFromUser(newMember.user).playOnEntry)
+            console.log(newMember.user.username + " does not have playOnEntry as true. It is: " + ReadWrite.GetJsonFromUser(newMember.user).playOnEntry);
         else
             joinVoiceChannel(newMember);
     });

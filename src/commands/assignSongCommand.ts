@@ -2,7 +2,7 @@ import * as Discord from "discord.js";
 import {IBotCommand} from "../api";
 import * as ReadWrite from "../readWrite";
 
-let tmpUserData : ReadWrite.IJsonUserData;
+
 
 export default class assignSongCommand implements IBotCommand
 {
@@ -35,17 +35,18 @@ export default class assignSongCommand implements IBotCommand
 
             try
             {
-                tmpUserData = ReadWrite.GetJsonFromUser(msgObject.author.id);
+                let tmpUserData : ReadWrite.IJsonUserData = ReadWrite.GetJsonFromUser(msgObject.author);
                 tmpUserData.songName = args[0];
-
-                ReadWrite.AddJsonUserData(tmpUserData);
+                ReadWrite.UpdateUserSongMapList(msgObject.author);
+                ReadWrite.AddJsonUserDataFile(msgObject.author, tmpUserData);
                 ReadWrite.myMap.set(msgObject.author.id, args[0]);
+
                 if(ReadWrite.myMap.has(msgObject.author.id))
                     console.log(msgObject.author.username + " is now mapped!");
                 else
                 {
                     console.log(msgObject.author.username + " is not mapped, very sad.")
-                    ReadWrite.UpdateUserMapList();
+                    ReadWrite.UpdateUserSongMapList(msgObject.author);
                     if(ReadWrite.myMap.has(msgObject.author.id))
                         console.log(msgObject.author.username + " is now mapped!");
                     else
