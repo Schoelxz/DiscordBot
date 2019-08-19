@@ -7,11 +7,24 @@ export default class assignRoleCommand implements IBotCommand {
 
     readonly commandCall = "role"
 
-    help(): string 
+    help(msgObject : Discord.Message, botClient : Discord.Client): string
     {
-        const message = "Adds a requested roll."
+        const message = "Adds a requested roll. e.g. !role Feeling the quote"
         const argMessage = "\nRemove role argument: -delete -remove -d -r"
-        return message + argMessage;
+        let rolesMessage = "";
+        if(msgObject.guild != undefined)
+        {
+            rolesMessage = "\nRoles available to add: ";
+            for (const role of msgObject.guild.roles) 
+            {
+                if(msgObject.guild.member(botClient.user).highestRole.position > role[1].position && role[1].name != "@everyone")
+                    rolesMessage += "\n" + role[1].name;
+            }
+        }
+        if(rolesMessage == "")
+            return message + argMessage;
+        else
+            return message + argMessage + rolesMessage;
     }
     isThisCommand(command: string): boolean {
         return command === this.commandCall;
