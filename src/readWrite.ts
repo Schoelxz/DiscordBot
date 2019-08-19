@@ -91,7 +91,6 @@ export function GetBotToken(): botTokens
 
 export function WriteFile(fileText : string, filePath : string, fileName : string, fileSuffix : string) : boolean
 {
-    
     try
     {
         if(!fs.existsSync(filePath))

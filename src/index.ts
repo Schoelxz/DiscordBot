@@ -145,6 +145,8 @@ function startEventListeners()
     {
         const errorlogDir = "T:/MyDiscordBot/logs/errors/";
         let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
+        let errorMessage : string = error.message;
+        let errorName : string = error.name;
         try
         {
             guildOwner.send(error.name + ":\n" + error.message);
@@ -153,23 +155,23 @@ function startEventListeners()
         {
         }
         console.error("Error stack:[" + error.stack + "] end of stack.");
-        console.error("Error name:[" + error.name + "]:\nError message:[" + error.message + "] end of message.");
+        console.error("Error name:[" + errorName + "]:\nError message:[" + errorMessage + "] end of message.");
         
         if(error.stack != undefined)
         {
-            let stackError : string = error.stack as string;
+            let errorStack : string = error.stack as string;
             ReadWrite.WriteFile(
-            "Error message:\n\n" + error.message + "\n\nError stack:\n\n" + stackError,
+            "Error message:\n\n" + errorMessage + "\n\nError stack:\n\n" + errorStack,
             errorlogDir,
-            error.name +"_"+ swedishTimeDate,
+            errorName +"_"+ swedishTimeDate,
             ".txt");
         }
         else
         {
             ReadWrite.WriteFile(
-            "Error message:\n\n" + error.message,
+            "Error message:\n\n" + errorMessage,
             errorlogDir,
-            error.name +"_"+ swedishTimeDate,
+            errorName +"_"+ swedishTimeDate,
             ".txt");
         }
             
@@ -219,7 +221,7 @@ async function handleCommand(msg: Discord.Message)
             for(const arg of args)
                 if(arg === "-h")
                 {
-                    await msg.reply(commandClass.help())
+                    await msg.reply(commandClass.help(msg, yoshinoBot))
                     .then(sent => console.log(`Sent a reply to ${msg.author.username}`))
                     .catch(console.error);
                     return;
