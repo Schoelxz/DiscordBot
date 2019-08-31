@@ -108,6 +108,11 @@ function startEventListeners()
 
     yoshinoBot.on("voiceStateUpdate", (oldMember, newMember) => 
     {   
+        if(isNullOrUndefined(oldMember) || isNullOrUndefined(newMember))
+        {
+            console.error("Error: voiceStateUpdate failed to get a defined oldMember or newMember!\n oldMember: " + oldMember + "\n newMember: " + newMember);
+            return;
+        }
         if(newMember.user.id === yoshinoBot.user.id)
         {
             console.log("voiceStateUpdate: was bot");
@@ -143,38 +148,46 @@ function startEventListeners()
 
     yoshinoBot.on("error", error =>
     {
-        const errorlogDir = "T:/MyDiscordBot/logs/errors/";
-        let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
-        let errorMessage : string = error.message;
-        let errorName : string = error.name;
         try
         {
-            guildOwner.send(error.name + ":\n" + error.message);
-        }
-        catch
-        {
-        }
-        console.error("Error stack:[" + error.stack + "] end of stack.");
-        console.error("Error name:[" + errorName + "]:\nError message:[" + errorMessage + "] end of message.");
-        
-        if(error.stack != undefined)
-        {
-            let errorStack : string = error.stack as string;
-            ReadWrite.WriteFile(
-            "Error message:\n\n" + errorMessage + "\n\nError stack:\n\n" + errorStack,
-            errorlogDir,
-            errorName +"_"+ swedishTimeDate,
-            ".txt");
-        }
-        else
-        {
-            ReadWrite.WriteFile(
-            "Error message:\n\n" + errorMessage,
-            errorlogDir,
-            errorName +"_"+ swedishTimeDate,
-            ".txt");
-        }
+            const errorlogDir = `T:/MyDiscordBot/logs/errors/`;
+            let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
+            let errorMessage : string = error.message;
+            let errorName : string = error.name;
+            try
+            {
+                guildOwner.send(error.name + ":\n" + error.message);
+            }
+            catch(exception)
+            {
+                console.error("Error: tried to send error to guild owner but was unable to send the error to the guild owner!");
+            }
+            console.error("Error stack:[" + error.stack + "] end of stack.");
+            console.error("Error name:[" + errorName + "]:\nError message:[" + errorMessage + "] end of message.");
             
+            if(error.stack != undefined)
+            {
+                let errorStack : string = error.stack as string;
+                ReadWrite.WriteFile(
+                "Error message:\n\n" + errorMessage + "\n\nError stack:\n\n" + errorStack,
+                errorlogDir,
+                errorName +"_"+ swedishTimeDate,
+                ".txt");
+            }
+            else
+            {
+                ReadWrite.WriteFile(
+                "Error message:\n\n" + errorMessage,
+                errorlogDir,
+                errorName +"_"+ swedishTimeDate,
+                ".txt");
+            }
+        }
+        catch(exception)
+        {
+            console.error("yoshinoBot.on(error) failed something: \n" + exception)
+            return;
+        }
     });
 }
 
