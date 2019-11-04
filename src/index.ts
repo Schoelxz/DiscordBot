@@ -150,7 +150,7 @@ function startEventListeners()
     {
         try
         {
-            const errorlogDir = `T:/MyDiscordBot/logs/errors/`;
+            const errorlogDir = `../MyDiscordBot/logs/errors/`;
             let swedishTimeDate = new Date().toLocaleString("sv-SE", {hour12: false});
             let errorMessage : string = error.message;
             let errorName : string = error.name;
@@ -203,7 +203,7 @@ async function joinVoiceChannel(guildMember : Discord.GuildMember)
             const receiver = connection.createReceiver();
             const dispatcher = connection.playBroadcast(broadcast, streamOptions);
             console.log("volumeDecibels: " + dispatcher.volumeDecibels);
-            broadcast.playFile(`T:/Sounds/` + ReadWrite.myMap.get(guildMember.user.id));
+            broadcast.playFile(`../MyDiscordBot/sounds/` + ReadWrite.myMap.get(guildMember.user.id));
             console.log("Played sound at channel: " + guildMember.voiceChannel.name + " " + ReadWrite.myMap.get(guildMember.user.id));
         })
         .catch(console.error);
@@ -279,7 +279,7 @@ export function sendRandomQuotes(textChannelID : string)
     {
         textChannelID = "609212232311504896";
     }
-    const quotesPath = "T:/MyDiscordBot/pictures/inspirobot quotes/";
+    const quotesPath = "../MyDiscordBot/pictures/inspirobot_quotes/";
     const allQuotesName = ReadWrite.GetAllFileNamesFromDir(quotesPath);
     if(allQuotesName.length == 0)
     {

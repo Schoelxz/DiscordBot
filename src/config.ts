@@ -1,5 +1,5 @@
 export let config = {
-    "tokenPath": "T:/MyDiscordBot/token/bot-tokens.json",
+    "tokenPath": "../MyDiscordBot/token/bot-tokens.json",
     "prefix": "!",
     "commands":[
         "joinCommand",

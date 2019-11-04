@@ -36,7 +36,7 @@ export default class joinCommand implements IBotCommand
                 {
                         //msgObject.reply("Successfully Joined!");
                         const dispatcher = connection.playBroadcast(broadcast, streamOptions);
-                        broadcast.playFile(`T:/Sounds/` + fileName);
+                        broadcast.playFile(`../MyDiscordBot/sounds/` + fileName);
                 });
             }
             else

@@ -33,7 +33,7 @@ export default class leaveCommand implements IBotCommand
             }
 
             const dispatcher = botClient.voiceConnections.first().playBroadcast(broadcast, streamOptions);
-            broadcast.playFile("T:/Sounds/" + fileName);
+            broadcast.playFile("../MyDiscordBot/sounds/" + fileName);
             LeaveChannelAfterDelay(botClient, 2000);
         }
         else

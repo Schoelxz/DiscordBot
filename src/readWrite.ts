@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as ConfigFile from "./config";
 import * as Discord from 'discord.js';
 
-const usersDataPath = "../userData";
+const usersDataPath = "../MyDiscordBot/userData";
 let botTokens: botTokens;
 //let tmpUserData : IJsonUserData;
 

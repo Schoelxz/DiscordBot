@@ -10,7 +10,7 @@ export default class musicCommand implements IBotCommand {
     {
         let message2 : string = "";
 
-        ReadWrite.GetAllFileNamesFromDir("T:/Sounds").forEach(element => 
+        ReadWrite.GetAllFileNamesFromDir("../MyDiscordBot/sounds").forEach(element => 
         {
             let split_elem = element.split('.');
             if(split_elem[split_elem.length-1] == "wav")
@@ -47,7 +47,7 @@ export default class musicCommand implements IBotCommand {
         }
 
        const broadcast = botClient.createVoiceBroadcast();
-       broadcast.playFile(`T:/Sounds/` + path);
+       broadcast.playFile(`../MyDiscordBot/sounds/` + path);
         // Play sound in all voice connections that the client is in
         console.log("size of voice connections: " + botClient.voiceConnections.size);
         for (const connection of botClient.voiceConnections.values()) 
