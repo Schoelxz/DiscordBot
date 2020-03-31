@@ -15,8 +15,3 @@ export let config = {
         "assignRoleCommand"
     ]
 }
-
-/*
-
-const soundPath = "T:/Sounds/";
-*/
